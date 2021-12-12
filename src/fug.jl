@@ -5,8 +5,21 @@ using JuMP
 using Ipopt
 
 #geometric mean of relative volitilies, useful for shortcut column
-function geoMean(kLightKeyDist, kLightKeyBot, kHeavyKeyDist, kHeavyKeyBot)
-    return(sqrt((kLightKeyDist*kLightKeyBot)/(kHeavyKeyDist*kHeavyKeyBot)))
+"""
+geoMean(kLKd, kLKb, kHKd, kHKb)
+
+returns the geometric mean of k values
+
+$\sqrt{LK_d*LK_b}{HK_d*HK_b}$
+
+#Arguments 
+*'kLKd': k value of light key in distilate
+*'kLKb': k value of light key in bottoms
+*'kHKd': k value of heavy key in distilate
+*'kHKb': k value of heavy key in bottoms
+"""
+function geoMean(kLKd, kLKb, kHKd, kHKb)
+    return(sqrt((kLKd*kLKb)/(kHKd*kHKb)))
 end
 
 #Fenske equation used in step 3 of column sizing to get the
