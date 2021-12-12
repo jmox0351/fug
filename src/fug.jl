@@ -10,7 +10,9 @@ geoMean(kLKd, kLKb, kHKd, kHKb)
 
 returns the geometric mean of k values
 
-\$\\sqrt{LK_d*LK_b}{HK_d*HK_b}\$
+'''math
+sqrt{LK_d*LK_b}{HK_d*HK_b}
+'''
 
 #Arguments 
 *'kLKd': k value of light key in distilate
