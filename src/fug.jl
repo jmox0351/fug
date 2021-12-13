@@ -11,7 +11,7 @@ geoMean(kLKd, kLKb, kHKd, kHKb)
 returns the geometric mean of k values
 
 '''math
-sqrt{LK_d*LK_b}{HK_d*HK_b}
+\\sqrt{LK_d*LK_b}{HK_d*HK_b}
 '''
 
 #Arguments 
@@ -25,10 +25,29 @@ function geoMean(kLKd, kLKb, kHKd, kHKb)
 end
 
 #Fenske equation used in step 3 of column sizing to get the
-function fenske(xLightKeyDist, kLightKeyDist, xHeavyKeyDist, kHeavyKeyDist, xLightKeyBot, kLightKeyBot,
-        xHeavyKeyBot, kHeavyKeyBot)
-    α_avg = geoMean(kLightKeyDist, kLightKeyBot, kHeavyKeyDist, kHeavyKeyBot)
-    n = log10(xLightKeyDist*xHeavyKeyBot/(xLightKeyBot*xHeavyKeyDist)) / log10(α_avg)
+"""
+fenske(xLKd, kLKd, xHKd, kHKd, xLKb, kLKb, xHKb, kHKb)
+
+returns the theoretical minimun number of trays for the distillation column
+
+'''math
+n = \\frac{log_{10}(\\frac{xLKd cdot xHKb}{xLKb cdot xHKd})}{log_{10}(alpha_{avg})}
+'''
+
+
+#Arguments 
+*'xLKd': x value of light key in distilate
+*'kLKd': k value of light key in distilate
+*'xHKd': x value of heavy key in distilate
+*'kHKd': k value of heavy key in distilate
+*'xLKb': x value of light key in bottoms
+*'kLKb': k value of light key in bottoms
+*'xHKb': x value of heavy key in bottoms
+*'kHKb': k value of heavy key in bottoms
+"""
+function fenske(xLKd, kLKd, xHKd, kHKd, xLKb, kLKb, xHKb, kHKb)
+    α_avg = geoMean(kLKd, kLKb, kHKd, kHKb)
+    n = log10(xLKd*xHKb/(xLKb*xHKd)) / log10(α_avg)
     return(n) #return number of trays
 end
 

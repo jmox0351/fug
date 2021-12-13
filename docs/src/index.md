@@ -1,3 +1,6 @@
 # fug.jl
 
-Documentation for fug.jl
+@docs"""
+fug.geoMean,
+fug.fenske
+"""
