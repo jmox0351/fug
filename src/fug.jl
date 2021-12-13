@@ -31,7 +31,7 @@ fenske(xLKd, kLKd, xHKd, kHKd, xLKb, kLKb, xHKb, kHKb)
 returns the theoretical minimun number of trays for the distillation column
 
 '''math
-n = \\frac{log_{10}(\\frac{xLKd cdot xHKb}{xLKb cdot xHKd})}{log_{10}(alpha_{avg})}
+n = \\frac{log_{10}(\\frac{xLKd cdot xHKb}{xLKb cdot xHKd})}{log_{10}(\\alpha_{avg})}
 '''
 
 
@@ -51,7 +51,34 @@ function fenske(xLKd, kLKd, xHKd, kHKd, xLKb, kLKb, xHKb, kHKb)
     return(n) #return number of trays
 end
 
-function step4(α, nmin, F, D, B, xHKd, xHKb, xfi)
+#nonKeyComp finds the compistions of the non-key components in both the distillate and bottoms
+"""
+nonKeyComp(alpha, nmin, F, D, B, xHKd, xHKb, xfi)
+
+returns the molar fraction of a non-key component in both the bottoms and the distillate
+
+(xBi, xDi)
+
+by solving the 2 equations at the same time:
+'''math
+\\frac{x_{di}}{x_{bi}} = \\alpha^{n_{min}} \\cdot \\frac{x_{HK,d}}{x_HK,b}
+'''
+
+'''math
+F_i = D_i + B_i
+'''
+
+#Arguments
+*'alpha': relative volitility of component with the heavy key
+*'nmin': the theoretical minimum number of stages for the column, get from Fenske equation
+*'F': feed molar flow rate
+*'D': distillate molar flow rate
+*'B': bottoms molar flow rate
+*'xHKd': x value of the heavy key in the distillate 
+*'xHKb': x value of the heavy key in the bottoms
+*'xfi': the x value of the non-key component in the feed
+"""
+function nonKeyComp(α, nmin, F, D, B, xHKd, xHKb, xfi)
     model = Model(with_optimizer(Ipopt.Optimizer))
     set_silent(model)
     @variable(model, xdi)
