@@ -1,9 +1,9 @@
 # The Fenske-Underwood-Gilliand (fug) Module
 
- ```@docs
+@docs"""
  fug.geoMean
  fug.fenske
- ```
+"""
 
 ## Module Index
 

@@ -2,5 +2,6 @@
 
 @docs"""
 fug.geoMean,
-fug.fenske
+fug.fenske,
+fug.nonKeyComp
 """
