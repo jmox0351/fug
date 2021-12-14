@@ -189,12 +189,12 @@ N_{tot} = N_d + N_b
 *'nTot': total number of stages in column
 """
 function kirkbride(B,D,xHKf,xLKf,xHKd,xLKb,nTot)
-    t = ((B/D) * (xHKf/xLKf) * (xLKb/xHKd)^2)^0.206
+    t = 0.206*log(((B/D) * (xHKf/xLKf) * (xLKb/xHKd)^2))
     model = Model(with_optimizer(Ipopt.Optimizer))
     set_silent(model)
     @variable(model, m) # where m is number of stages above feed
     @NLconstraint(model, 0.2 <= m <= nTot-0.2)
-    @NLobjective(model, Min, (m/(nTot-m) - t)^2)
+    @NLobjective(model, Min, (log(m/(nTot-m)) - t)^2)
     optimize!(model)
     M = value(m)
     empty!(model)
@@ -210,5 +210,6 @@ function diameter(F_ha, F_f, F_st, Cs, ρ_l, ρ_g, f, A_d, A_t, G)
     Dt = sqrt(4*G/ (f*Uf*pi*(1-A_d/A_t)*ρ_g))
     return(Dt)
 end
+
 
 end # module
