@@ -211,5 +211,81 @@ function diameter(F_ha, F_f, F_st, Cs, ρ_l, ρ_g, f, A_d, A_t, G)
     return(Dt)
 end
 
+### This is the master function for the fug method. The inputs will be:
+### comp: List of component names
+### xFeed: the component fractions in order from the least to the most volitile
+### feedBasis: The molar flow rate of the feed
+### kDist: the K values for the distillate
+### kBot: the K values for the bottoms
+### LKi: the index of the light key
+### HKi: in the index of the heavy key
+### splitFracLK: The percentage of the light key in the distillate for a 90/10 split this would be 0.9
+### splitFracHK: the percentage of the heavy key in the bottoms
+### F is molar flow rate of feed
+### B is molar flow rate of bottoms
+### D is molar flow rate of distillate
+### quality is vapor fraction of the feed
+### RRHeuristic is what to multiply the minimum reflux ratio by to get the actual reflux ratio
+
+
+function fug(comp, xFeed, kBot, kDist, HKi, LKi, splitFracHK, splitFracLK, F, B, D, quality,
+    RRHeuristic)
+    len = length(xFeed)
+    feedMolFlow = xFeed * F
+    botMolFlow=zeros(len); distMolFlow=zeros(len); xBot=zeros(len); xDist=zeros(len)
+    
+    botMolFlow[1:HKi-1]=feedMolFlow[1:HKi-1] 
+    botMolFlow[HKi]=feedMolFlow[HKi]*splitFracHK
+    botMolFlow[LKi]=feedMolFlow[LKi]*(1-splitFracLK)
+    
+    distMolFlow[HKi]=feedMolFlow[HKi]*(1-splitFracHK)
+    distMolFlow[LKi]=feedMolFlow[LKi]*splitFracLK
+    distMolFlow[LKi+1:end]=feedMolFlow[LKi+1:end]
+        
+    for i ∈ 1:len
+        xDist[i] = distMolFlow[i]/sum(distMolFlow)
+        xBot[i] = botMolFlow[i]/sum(botMolFlow)
+    end
+    print(xDist[HKi], " x val of HK in distilate " , xBot[LKi], " x val of LK in bottoms \n")
+    
+    xLKd = xDist[LKi]; kLKd = kDist[LKi]; xLKb = xBot[LKi]; kLKb = kBot[LKi];
+    xHKd = xDist[HKi]; kHKd = kDist[HKi]; xHKb = xBot[HKi]; kHKb = kBot[HKi];
+
+    nmin = fenske(xLKd, kLKd, xHKd, kHKd, xLKb, kLKb, xHKb, kHKb)
+    print("Theoretical min number of stages is ", nmin, '\n')
+    
+    names=Array{Any}(undef,len-2); kNKd=zeros(len-2); kNKb=zeros(len-2); xfi=zeros(len-2);
+    names[1:HKi-1] = comp[1:HKi-1]; names[HKi:end] = comp[LKi+1:end];
+    kNKd[1:HKi-1] = kDist[1:HKi-1]; kNKd[HKi:end] = kDist[LKi+1:end];
+    kNKb[1:HKi-1] = kBot[1:HKi-1]; kNKb[HKi:end] = kBot[LKi+1:end];
+    xfi[1:HKi-1] = xFeed[1:HKi-1]; xfi[HKi:end] = xFeed[LKi+1:end];
+    xHKd = xDist[HKi]
+    xHKb = xBot[HKi]
+    
+    alp = zeros(len-2)
+    for i = 1:len-2
+         alp[i] = geoMean(kNKd[i], kNKb[i], kHKd, kHKb)
+    end
+
+    xDist=zeros(len-2); xBot=zeros(len-2);
+    for i = 1:len-2
+        xBot[i], xDist[i] = step4(alp[i], nmin, F, D, B, xHKd, xHKb, xfi[i])
+        print(names[i], " bottoms frac ", xBot[i], " distilate frac ", xDist[i], '\n')
+    end
+    
+    insert!(xBot,HKi,xHKb); insert!(xBot,LKi,xLKb);
+    insert!(xDist,HKi,xHKd); insert!(xDist,LKi,xLKd);
+    
+    rmin = underwood(kDist, kBot, kHKd, kHKb, xFeed, quality, xDist)
+    print("The min reflux ratio is ", rmin, '\n')
+    ract = rmin * RRHeuristic
+    
+    nact = gilliand(ract, rmin, nmin)
+    print("Our actual number of stages will be ", nact, '\n')
+    
+    above, below = kirkbride(B,D,xFeed[HKi],xFeed[LKi],xLKb,xHKd, nact)
+    print("our optimal feed stage is ", above, " from the top and ", below, " from the bottom \n")
+
+end
 
 end # module
