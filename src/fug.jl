@@ -228,7 +228,7 @@ end
 ### RRHeuristic is what to multiply the minimum reflux ratio by to get the actual reflux ratio
 
 
-function fug(comp, xFeed, kBot, kDist, HKi, LKi, splitFracHK, splitFracLK, F, B, D, quality,
+function fugk(comp, xFeed, kBot, kDist, HKi, LKi, splitFracHK, splitFracLK, F, B, D, quality,
     RRHeuristic)
     len = length(xFeed)
     feedMolFlow = xFeed * F
