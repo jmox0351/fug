@@ -4,8 +4,7 @@ using fug
 push!(LOAD_PATH,"../src/")
 makedocs(
     sitename = "Fenske-Underwood-Gilliand Documation",
-    pages = ["Index" => "index.md",
-    "An other page" => "anotherPage.md"],
+    pages = ["Index" => "index.md"],
     format = Documenter.HTML(prettyurls = false),
     modules = [fug]
 )

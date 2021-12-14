@@ -68,6 +68,11 @@ by solving the 2 equations at the same time:
 F_i = D_i + B_i
 '''
 
+done by using the following optimization:
+'''math
+Min[(\\frac{\\alpha^{N_{min}} \\cdot x_{HK,d}}{x_{HK,b}} - \\frac{x_{i,d} \\cdot B}{F \\cdot x_{i,f} - D \\cdot x_{i,d}})^2]
+'''
+
 #Arguments
 *'alpha': relative volitility of component with the heavy key
 *'nmin': the theoretical minimum number of stages for the column, get from Fenske equation
@@ -94,11 +99,32 @@ function nonKeyComp(α, nmin, F, D, B, xHKd, xHKb, xfi)
 end
 
 #Underwood equation for finding theta
-function underwood(kDist, kBot, kHeavyKeyDist, kHeavyKeyBot, xFeed, qual, xDist)
+"""
+underwood(kDist, kBot, kHKd, kHKb, xFeed, qual, xDist)
+
+The Underwood equation for finding the minimum reflux ratio by solving the first equation subject to the second condition:
+
+'''math
+\\sum_{i=1}^n \\frac{\\alpha_i \\cdot x_{i,f}}{\\alpha_i - \\Theta} = 1-q
+'''
+'''math
+R_{min} = \\sum_{i=1}^n \\frac{\\alpha_i \\cdot x_{i,d}}{\\alpha_i - \\Theta} - 1
+'''
+
+#Arguments
+*'kDist': vector of k values for all components in the distillate
+*'kBot': vector of k values for all components in the bottoms
+*'kHKd': k value of heavy key in distillate
+*'kHKb': k value of heavy key in bottoms
+*'xFeed': vector of x values for the feed
+*'qual': quality of the feed stream (percentage of vapor if in VLE)
+*'xDist': vector of x values for the distillate
+"""
+function underwood(kDist, kBot, kHKd, kHKb, xFeed, qual, xDist)
     l = length(kDist)
     α = zeros(l)
     for i = 1:l
-       α[i] = geoMean(kDist[i], kBot[i], kHeavyKeyDist, kHeavyKeyBot)
+       α[i] = geoMean(kDist[i], kBot[i], kHKd, kHKb)
     end
 
     model = Model(with_optimizer(Ipopt.Optimizer))
@@ -114,6 +140,20 @@ function underwood(kDist, kBot, kHeavyKeyDist, kHeavyKeyBot, xFeed, qual, xDist)
 end
 
 #Gilliand correlation for FUG method
+"""
+gilliand(ract, rmin, nmin)
+
+The Gilliand correlation for the actual number of stages. Solve the following equation for N
+
+'''math
+\\frac{N-N_{min}}{N+1} = 0.75 \\cdot [1-(\\frac{R-R_{min}}{R+1})^{0.566}]
+'''
+
+#Arguments
+*'ract': The actual reflux ratio, typically 1.1-1.4 times the minimum reflux ratio
+*'rmin': Minimum reflux ratio (Underwood equation)
+*'nmin': Theoretical minimum number of stages (Fenske equation)
+"""
 function gilliand(ract, rmin, nmin)
     model = Model(with_optimizer(Ipopt.Optimizer))
     set_silent(model)
@@ -127,8 +167,29 @@ function gilliand(ract, rmin, nmin)
 end
 
 #Kirkbride function for finding optimal feed stage, uses ipopt solver
-function kirkbride(B,D,xHKFeed,xLKFeed,xLKBot,xHKDist, nTot)
-    t = ((B/D) * (xHKFeed/xLKFeed) * (xLKBot/xHKDist)^2)^0.206
+"""
+kirkbride(B,D,xHKf,xLKf,xHKd,xLKb,nTot)
+
+The Kirkbride function for finding the optimial feed stage. Solves the first equation subject to the constraint:
+
+'''math
+ln(\\frac{N_d}{N_b}) = 0.206 \\cdot ln(\\frac{B \\cdot x_{HK,f} \\cdot x_{LK,b}^2}{D \\cdot x_{LK,f} \\cdot x_{HK,d}^2})
+'''
+'''math
+N_{tot} = N_d + N_b
+'''
+
+#Arguments
+*'B': bottoms molar flow rate
+*'D': distillate molar flow rate
+*'xHKf': x value of heavy key in feed
+*'xLKf': x value of light key in feed
+*'xHKd': x value of heavy key in distillate
+*'xLKb': x value of light key in bottoms
+*'nTot': total number of stages in column
+"""
+function kirkbride(B,D,xHKf,xLKf,xHKd,xLKb,nTot)
+    t = ((B/D) * (xHKf/xLKf) * (xLKb/xHKd)^2)^0.206
     model = Model(with_optimizer(Ipopt.Optimizer))
     set_silent(model)
     @variable(model, m) # where m is number of stages above feed
@@ -136,9 +197,18 @@ function kirkbride(B,D,xHKFeed,xLKFeed,xLKBot,xHKDist, nTot)
     @NLobjective(model, Min, (m/(nTot-m) - t)^2)
     optimize!(model)
     M = value(m)
-    print("test")
     empty!(model)
     return(M, nTot-M) #return number stages above, number of stages below
+end
+
+"""
+jj
+"""
+function diameter(F_ha, F_f, F_st, Cs, ρ_l, ρ_g, f, A_d, A_t, G)
+    C = F_ha * F_f * F_st * Cs
+    Uf = C*sqrt((ρ_l-ρ_g)/ρ_g)
+    Dt = sqrt(4*G/ (f*Uf*pi*(1-A_d/A_t)*ρ_g))
+    return(Dt)
 end
 
 end # module
