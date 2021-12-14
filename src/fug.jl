@@ -269,7 +269,7 @@ function fugk(comp, xFeed, kBot, kDist, HKi, LKi, splitFracHK, splitFracLK, F, B
 
     xDist=zeros(len-2); xBot=zeros(len-2);
     for i = 1:len-2
-        xBot[i], xDist[i] = step4(alp[i], nmin, F, D, B, xHKd, xHKb, xfi[i])
+        xBot[i], xDist[i] = nonKeyComp(alp[i], nmin, F, D, B, xHKd, xHKb, xfi[i])
         print(names[i], " bottoms frac ", xBot[i], " distilate frac ", xDist[i], '\n')
     end
     
