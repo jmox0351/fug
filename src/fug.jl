@@ -283,7 +283,7 @@ function fugk(comp, xFeed, kBot, kDist, HKi, LKi, splitFracHK, splitFracLK, F, B
     nact = gilliand(ract, rmin, nmin)
     print("Our actual number of stages will be ", nact, '\n')
     
-    above, below = kirkbride(B,D,xFeed[HKi],xFeed[LKi],xLKb,xHKd, nact)
+    above, below = kirkbride(B,D,xFeed[HKi],xFeed[LKi],xHKd,xLKb,nact)
     print("our optimal feed stage is ", above, " from the top and ", below, " from the bottom \n")
 
 end
