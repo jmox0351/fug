@@ -1,11 +1,23 @@
 # fug.jl
 
 ```@docs
-fug.geoMean,
-fug.fenske,
-fug.nonKeyComp,
-fug.underwood,
-fug.gilliand,
-fug.kirkbride,
+fug.geoMean
+```
+```@docs
+fug.fenske
+```
+```@docs
+fug.nonKeyComp
+```
+```@docs
+fug.underwood
+```
+```@docs
+fug.gilliand
+```
+```@docs
+fug.kirkbride
+```
+```@docs
 fug.diameter
 ```
