@@ -105,12 +105,12 @@ underwood(kDist, kBot, kHKd, kHKb, xFeed, qual, xDist)
 
 The Underwood equation for finding the minimum reflux ratio by solving the first equation subject to the second condition:
 
-'''math
+```math
 \\sum_{i=1}^n \\frac{\\alpha_i \\cdot x_{i,f}}{\\alpha_i - \\Theta} = 1-q
-'''
-'''math
+```
+```math
 R_{min} = \\sum_{i=1}^n \\frac{\\alpha_i \\cdot x_{i,d}}{\\alpha_i - \\Theta} - 1
-'''
+```
 
 #Arguments
 *'kDist': vector of k values for all components in the distillate
