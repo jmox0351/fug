@@ -6,19 +6,20 @@ using Ipopt
 
 #geometric mean of relative volitilies, useful for shortcut column
 """
-geoMean(kLKd, kLKb, kHKd, kHKb)
+geoMean(kLKd::Float64, kLKb::Float64, kHKd::Float64, kHKb::Float64)
 
 returns the geometric mean of k values
 
-'''math
-\\sqrt{LK_d*LK_b}{HK_d*HK_b}
-'''
+```math
+\\sqrt{\\frac{LK_d \\cdot LK_b}{HK_d \\cdot HK_b}}
+```
 
 #Arguments 
-*'kLKd': k value of light key in distilate
-*'kLKb': k value of light key in bottoms
-*'kHKd': k value of heavy key in distilate
-*'kHKb': k value of heavy key in bottoms
+
+*'kLKd'*: k value of light key in distilate
+*'kLKb'*: k value of light key in bottoms
+*'kHKd'*: k value of heavy key in distilate
+*'kHKb'*: k value of heavy key in bottoms
 """
 function geoMean(kLKd, kLKb, kHKd, kHKb)
     return(sqrt((kLKd*kLKb)/(kHKd*kHKb)))
@@ -30,20 +31,20 @@ fenske(xLKd, kLKd, xHKd, kHKd, xLKb, kLKb, xHKb, kHKb)
 
 returns the theoretical minimun number of trays for the distillation column
 
-'''math
-n = \\frac{log_{10}(\\frac{xLKd cdot xHKb}{xLKb cdot xHKd})}{log_{10}(\\alpha_{avg})}
-'''
+```math
+n = \\frac{log_{10}(\\frac{xLKd \\cdot xHKb}{xLKb \\cdot xHKd})}{log_{10}(\\alpha_{avg})}
+```
 
 
 #Arguments 
-*'xLKd': x value of light key in distilate
-*'kLKd': k value of light key in distilate
-*'xHKd': x value of heavy key in distilate
-*'kHKd': k value of heavy key in distilate
-*'xLKb': x value of light key in bottoms
-*'kLKb': k value of light key in bottoms
-*'xHKb': x value of heavy key in bottoms
-*'kHKb': k value of heavy key in bottoms
+*'xLKd'*: x value of light key in distilate
+*'kLKd'*: k value of light key in distilate
+*'xHKd'*: x value of heavy key in distilate
+*'kHKd'*: k value of heavy key in distilate
+*'xLKb'*: x value of light key in bottoms
+*'kLKb'*: k value of light key in bottoms
+*'xHKb'*: x value of heavy key in bottoms
+*'kHKb'*: k value of heavy key in bottoms
 """
 function fenske(xLKd, kLKd, xHKd, kHKd, xLKb, kLKb, xHKb, kHKb)
     α_avg = geoMean(kLKd, kLKb, kHKd, kHKb)
@@ -60,28 +61,28 @@ returns the molar fraction of a non-key component in both the bottoms and the di
 (xBi, xDi)
 
 by solving the 2 equations at the same time:
-'''math
-\\frac{x_{di}}{x_{bi}} = \\alpha^{n_{min}} \\cdot \\frac{x_{HK,d}}{x_HK,b}
-'''
+```math
+\\frac{x_{di}}{x_{bi}} = \\alpha^{n_{min}} \\cdot \\frac{x_{HK,d}}{x_{HK,b}}
+```
 
-'''math
+```math
 F_i = D_i + B_i
-'''
+```
 
 done by using the following optimization:
-'''math
+```math
 Min[(\\frac{\\alpha^{N_{min}} \\cdot x_{HK,d}}{x_{HK,b}} - \\frac{x_{i,d} \\cdot B}{F \\cdot x_{i,f} - D \\cdot x_{i,d}})^2]
-'''
+```
 
 #Arguments
-*'alpha': relative volitility of component with the heavy key
-*'nmin': the theoretical minimum number of stages for the column, get from Fenske equation
-*'F': feed molar flow rate
-*'D': distillate molar flow rate
-*'B': bottoms molar flow rate
-*'xHKd': x value of the heavy key in the distillate 
-*'xHKb': x value of the heavy key in the bottoms
-*'xfi': the x value of the non-key component in the feed
+*'alpha'*: relative volitility of component with the heavy key
+*'nmin'*: the theoretical minimum number of stages for the column, get from Fenske equation
+*'F'*: feed molar flow rate
+*'D'*: distillate molar flow rate
+*'B'*: bottoms molar flow rate
+*'xHKd*': x value of the heavy key in the distillate 
+*'xHKb'*: x value of the heavy key in the bottoms
+*'xfi'*: the x value of the non-key component in the feed
 """
 function nonKeyComp(α, nmin, F, D, B, xHKd, xHKb, xfi)
     model = Model(with_optimizer(Ipopt.Optimizer))
@@ -202,7 +203,7 @@ function kirkbride(B,D,xHKf,xLKf,xHKd,xLKb,nTot)
 end
 
 """
-jj
+try it out
 """
 function diameter(F_ha, F_f, F_st, Cs, ρ_l, ρ_g, f, A_d, A_t, G)
     C = F_ha * F_f * F_st * Cs
