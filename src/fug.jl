@@ -17,8 +17,11 @@ returns the geometric mean of k values
 #Arguments 
 
 *'kLKd'*: k value of light key in distilate
+
 *'kLKb'*: k value of light key in bottoms
+
 *'kHKd'*: k value of heavy key in distilate
+
 *'kHKb'*: k value of heavy key in bottoms
 """
 function geoMean(kLKd, kLKb, kHKd, kHKb)
@@ -38,12 +41,19 @@ n = \\frac{log_{10}(\\frac{xLKd \\cdot xHKb}{xLKb \\cdot xHKd})}{log_{10}(\\alph
 
 #Arguments 
 *'xLKd'*: x value of light key in distilate
+
 *'kLKd'*: k value of light key in distilate
+
 *'xHKd'*: x value of heavy key in distilate
+
 *'kHKd'*: k value of heavy key in distilate
+
 *'xLKb'*: x value of light key in bottoms
+
 *'kLKb'*: k value of light key in bottoms
+
 *'xHKb'*: x value of heavy key in bottoms
+
 *'kHKb'*: k value of heavy key in bottoms
 """
 function fenske(xLKd, kLKd, xHKd, kHKd, xLKb, kLKb, xHKb, kHKb)
@@ -76,12 +86,19 @@ Min[(\\frac{\\alpha^{N_{min}} \\cdot x_{HK,d}}{x_{HK,b}} - \\frac{x_{i,d} \\cdot
 
 #Arguments
 *'alpha'*: relative volitility of component with the heavy key
+
 *'nmin'*: the theoretical minimum number of stages for the column, get from Fenske equation
+
 *'F'*: feed molar flow rate
+
 *'D'*: distillate molar flow rate
+
 *'B'*: bottoms molar flow rate
+
 *'xHKd*': x value of the heavy key in the distillate 
+
 *'xHKb'*: x value of the heavy key in the bottoms
+
 *'xfi'*: the x value of the non-key component in the feed
 """
 function nonKeyComp(α, nmin, F, D, B, xHKd, xHKb, xfi)
@@ -113,13 +130,19 @@ R_{min} = \\sum_{i=1}^n \\frac{\\alpha_i \\cdot x_{i,d}}{\\alpha_i - \\Theta} - 
 ```
 
 #Arguments
-*'kDist': vector of k values for all components in the distillate
-*'kBot': vector of k values for all components in the bottoms
-*'kHKd': k value of heavy key in distillate
-*'kHKb': k value of heavy key in bottoms
-*'xFeed': vector of x values for the feed
-*'qual': quality of the feed stream (percentage of vapor if in VLE)
-*'xDist': vector of x values for the distillate
+*'kDist'*: vector of k values for all components in the distillate
+
+*'kBot'*: vector of k values for all components in the bottoms
+
+*'kHKd'*: k value of heavy key in distillate
+
+*'kHKb'*: k value of heavy key in bottoms
+
+*'xFeed'*: vector of x values for the feed
+
+*'qual'*: quality of the feed stream (percentage of vapor if in VLE)
+
+*'xDist'*: vector of x values for the distillate
 """
 function underwood(kDist, kBot, kHKd, kHKb, xFeed, qual, xDist)
     l = length(kDist)
@@ -146,14 +169,16 @@ gilliand(ract, rmin, nmin)
 
 The Gilliand correlation for the actual number of stages. Solve the following equation for N
 
-'''math
+```math
 \\frac{N-N_{min}}{N+1} = 0.75 \\cdot [1-(\\frac{R-R_{min}}{R+1})^{0.566}]
-'''
+```
 
 #Arguments
-*'ract': The actual reflux ratio, typically 1.1-1.4 times the minimum reflux ratio
-*'rmin': Minimum reflux ratio (Underwood equation)
-*'nmin': Theoretical minimum number of stages (Fenske equation)
+*'ract'*: The actual reflux ratio, typically 1.1-1.4 times the minimum reflux ratio
+
+*'rmin'*: Minimum reflux ratio (Underwood equation)
+
+*'nmin'*: Theoretical minimum number of stages (Fenske equation)
 """
 function gilliand(ract, rmin, nmin)
     model = Model(with_optimizer(Ipopt.Optimizer))
@@ -173,21 +198,27 @@ kirkbride(B,D,xHKf,xLKf,xHKd,xLKb,nTot)
 
 The Kirkbride function for finding the optimial feed stage. Solves the first equation subject to the constraint:
 
-'''math
+```math
 ln(\\frac{N_d}{N_b}) = 0.206 \\cdot ln(\\frac{B \\cdot x_{HK,f} \\cdot x_{LK,b}^2}{D \\cdot x_{LK,f} \\cdot x_{HK,d}^2})
-'''
-'''math
+```
+```math
 N_{tot} = N_d + N_b
-'''
+```
 
 #Arguments
-*'B': bottoms molar flow rate
-*'D': distillate molar flow rate
-*'xHKf': x value of heavy key in feed
-*'xLKf': x value of light key in feed
-*'xHKd': x value of heavy key in distillate
-*'xLKb': x value of light key in bottoms
-*'nTot': total number of stages in column
+*'B'*: bottoms molar flow rate
+
+*'D'*: distillate molar flow rate
+
+*'xHKf'*: x value of heavy key in feed
+
+*'xLKf'*: x value of light key in feed
+
+*'xHKd'*: x value of heavy key in distillate
+
+*'xLKb'*: x value of light key in bottoms
+
+*'nTot'*: total number of stages in column
 """
 function kirkbride(B,D,xHKf,xLKf,xHKd,xLKb,nTot)
     t = ((B/D) * (xHKf/xLKf) * (xLKb/xHKd)^2)^0.206
@@ -203,10 +234,25 @@ function kirkbride(B,D,xHKf,xLKf,xHKd,xLKb,nTot)
 end
 
 """
-try it out
+diameter(F_ha, F_f, F_st, C_st, den_l, den_g, f, A_d, A_t, G)
+
+function for finding the diameter of the column based on fluid properities. Solves equation for:
+
+```math
+D_T = \\sqrt{\\frac{4G}{fU_f \\pi (1-(A_d/A_T)) \\rho_g}}
+```
+```math
+U_f = C \\cdot \\sqrt{\\frac{\\rho_l-\\rho_g}{\\rho_g}}
+```
+```math
+C = C_{st} \\cdot F_{st} \\cdot F_f \\cdot F_{ha} 
+```
+
+#Arguments
+*'F_ha'*: Hole factor, 1 for valve and bubble cap trays; 
 """
-function diameter(F_ha, F_f, F_st, Cs, ρ_l, ρ_g, f, A_d, A_t, G)
-    C = F_ha * F_f * F_st * Cs
+function diameter(F_ha, F_f, F_st, C_st, ρ_l, ρ_g, f, A_d, A_t, G)
+    C = F_ha * F_f * F_st * C_st
     Uf = C*sqrt((ρ_l-ρ_g)/ρ_g)
     Dt = sqrt(4*G/ (f*Uf*pi*(1-A_d/A_t)*ρ_g))
     return(Dt)
