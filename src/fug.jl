@@ -14,7 +14,7 @@ returns the geometric mean of k values
 \\sqrt{\\frac{LK_d \\cdot LK_b}{HK_d \\cdot HK_b}}
 ```
 
-#Arguments 
+# Arguments 
 
 *'kLKd'*: k value of light key in distilate
 
@@ -39,7 +39,7 @@ n = \\frac{log_{10}(\\frac{xLKd \\cdot xHKb}{xLKb \\cdot xHKd})}{log_{10}(\\alph
 ```
 
 
-#Arguments 
+# Arguments 
 *'xLKd'*: x value of light key in distilate
 
 *'kLKd'*: k value of light key in distilate
@@ -84,7 +84,7 @@ done by using the following optimization:
 Min[(\\frac{\\alpha^{N_{min}} \\cdot x_{HK,d}}{x_{HK,b}} - \\frac{x_{i,d} \\cdot B}{F \\cdot x_{i,f} - D \\cdot x_{i,d}})^2]
 ```
 
-#Arguments
+# Arguments
 *'alpha'*: relative volitility of component with the heavy key
 
 *'nmin'*: the theoretical minimum number of stages for the column, get from Fenske equation
@@ -129,7 +129,7 @@ The Underwood equation for finding the minimum reflux ratio by solving the first
 R_{min} = \\sum_{i=1}^n \\frac{\\alpha_i \\cdot x_{i,d}}{\\alpha_i - \\Theta} - 1
 ```
 
-#Arguments
+# Arguments
 *'kDist'*: vector of k values for all components in the distillate
 
 *'kBot'*: vector of k values for all components in the bottoms
@@ -173,7 +173,7 @@ The Gilliand correlation for the actual number of stages. Solve the following eq
 \\frac{N-N_{min}}{N+1} = 0.75 \\cdot [1-(\\frac{R-R_{min}}{R+1})^{0.566}]
 ```
 
-#Arguments
+# Arguments
 *'ract'*: The actual reflux ratio, typically 1.1-1.4 times the minimum reflux ratio
 
 *'rmin'*: Minimum reflux ratio (Underwood equation)
@@ -205,7 +205,7 @@ ln(\\frac{N_d}{N_b}) = 0.206 \\cdot ln(\\frac{B \\cdot x_{HK,f} \\cdot x_{LK,b}^
 N_{tot} = N_d + N_b
 ```
 
-#Arguments
+# Arguments
 *'B'*: bottoms molar flow rate
 
 *'D'*: distillate molar flow rate
@@ -248,7 +248,7 @@ U_f = C \\cdot \\sqrt{\\frac{\\rho_l-\\rho_g}{\\rho_g}}
 C = C_{st} \\cdot F_{st} \\cdot F_f \\cdot F_{ha} 
 ```
 
-#Arguments
+# Arguments
 *'F_ha'*: Hole factor, 1 for valve and bubble cap trays; 
 """
 function diameter(F_ha, F_f, F_st, C_st, ρ_l, ρ_g, f, A_d, A_t, G)
@@ -274,9 +274,40 @@ end
 ### quality is vapor fraction of the feed
 ### RRHeuristic is what to multiply the minimum reflux ratio by to get the actual reflux ratio
 
+"""
+fugk(comp, xFeed, kBot, kDist, HKi, LKi, splitFracHK, splitFracLK, F, B, D, quality, RRHeuristic)
 
-function fugk(comp, xFeed, kBot, kDist, HKi, LKi, splitFracHK, splitFracLK, F, B, D, quality,
-    RRHeuristic)
+main function for the Fenske-Underwood-Gilliand-Kirkbride function. Please make sure to put your components in the correct order.
+
+# Arguments
+
+*'comp'*: vector of component names in order from lowest to highest volitility
+
+*'xFeed'*: vector of fractions for each component in comp
+
+*'kBot'*: vector of k values for the bottoms of the column from lowest to highest
+
+*'kDist'*: vector of k values for the distillate of the column from lowest to highest
+
+*'HKi'*: Index of the heavy key (ie index in the comp list)
+
+*'LKi'*: Index of the light key (ie index in the comp list)
+
+*'splitFracHK'*: The fraction of the heavy key that will go to the bottoms. If 90\\% of the heavy key goes to the bottoms then 0.9
+
+*'splitFracLK'*: The fraction of the light key that will go to the distilate
+
+*'F'*: Feed molar feed rate
+
+*'B'*: Bottoms molar flow rate
+
+*'D'*: Distilate molar flow rate
+
+*'quality'*: vapor fraction of the feed
+
+*'RRHeuristic'*: reflux ratio heuristic value, typically in range [1.2,1.4]
+"""
+function fugk(comp, xFeed, kBot, kDist, HKi, LKi, splitFracHK, splitFracLK, F, B, D, quality, RRHeuristic)
     len = length(xFeed)
     feedMolFlow = xFeed * F
     botMolFlow=zeros(len); distMolFlow=zeros(len); xBot=zeros(len); xDist=zeros(len)

@@ -21,3 +21,6 @@ fug.kirkbride
 ```@docs
 fug.diameter
 ```
+```@docs
+fug.fugk
+```
