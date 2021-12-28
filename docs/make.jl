@@ -15,5 +15,5 @@ makedocs(
 # for more information.
 deploydocs(
     repo = "https://github.com/jmox0351/fug.git",
-    devbranch = "main"
+    devbranch = "gh-pages"
 )
